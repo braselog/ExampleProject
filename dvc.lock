@@ -1,0 +1,107 @@
+schema: '2.0'
+stages:
+  simulate:
+    cmd: python src/simulate.py
+    deps:
+    - path: src/simulate.py
+      hash: md5
+      md5: 3df94f94a1096e303f129c93827c0296
+      size: 1711
+    params:
+      params.yaml:
+        seed: 42
+        simulate:
+          n_samples_per_class: 100
+          n_features: 5
+          mean_healthy: 0.0
+          std_healthy: 1.0
+          mean_diseased: 0.8
+          std_diseased: 1.2
+    outs:
+    - path: data/raw/measurements.csv
+      hash: md5
+      md5: e6e8fb0c8bd45a43289717bf2f5999a1
+      size: 21176
+  prepare:
+    cmd: python src/prepare.py
+    deps:
+    - path: data/raw/measurements.csv
+      hash: md5
+      md5: e6e8fb0c8bd45a43289717bf2f5999a1
+      size: 21176
+    - path: src/prepare.py
+      hash: md5
+      md5: 5ef7ae2252702d4f3ea8890037075705
+      size: 998
+    params:
+      params.yaml:
+        prepare:
+          split_ratio: 0.3
+        seed: 42
+    outs:
+    - path: data/processed/test.csv
+      hash: md5
+      md5: 6b6517ffe5afffe6667d2654ffc4f507
+      size: 6292
+    - path: data/processed/train.csv
+      hash: md5
+      md5: efcb249004801b719a67f9e40a93068b
+      size: 14628
+  train:
+    cmd: python src/train.py
+    deps:
+    - path: data/processed/train.csv
+      hash: md5
+      md5: efcb249004801b719a67f9e40a93068b
+      size: 14628
+    - path: src/train.py
+      hash: md5
+      md5: 0bde20c2fafc3fc69c61f9337f8b3bdf
+      size: 4315
+    params:
+      params.yaml:
+        seed: 42
+        train:
+          model_type: LogisticRegression
+          logreg:
+            C: 1.0
+          rf:
+            n_estimators: 100
+            max_depth: 10
+    outs:
+    - path: models/model.joblib
+      hash: md5
+      md5: 036be78f3284c9f7cb78fc80f89fff4c
+      size: 1439
+    - path: plots/predicted_probabilities_train.png
+      hash: md5
+      md5: 42ef9fb05897ca44bc9c80dcc9cd1fee
+      size: 48848
+  evaluate:
+    cmd: python src/evaluate.py
+    deps:
+    - path: data/processed/test.csv
+      hash: md5
+      md5: 6b6517ffe5afffe6667d2654ffc4f507
+      size: 6292
+    - path: models/model.joblib
+      hash: md5
+      md5: 036be78f3284c9f7cb78fc80f89fff4c
+      size: 1439
+    - path: src/evaluate.py
+      hash: md5
+      md5: 7c0aa77c4b2aeb505aec1f9a11f2f4bb
+      size: 4236
+    outs:
+    - path: metrics/metrics.json
+      hash: md5
+      md5: 63bd2e994a91cb69f13209aec9e02d82
+      size: 179
+    - path: plots/confusion_matrix.png
+      hash: md5
+      md5: d9224e8c208725881f4dc80c678c2386
+      size: 19991
+    - path: plots/roc_curve.png
+      hash: md5
+      md5: f2f14bfd07aed3aff974efa10560cf60
+      size: 37149

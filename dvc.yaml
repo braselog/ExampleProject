@@ -29,12 +29,26 @@ stages:
     - train
     outs:
     - models/model.joblib
+    #- plots/feature_importance.png: # Existing plot
+    #    cache: true
+    - plots/predicted_probabilities_train.png: # New model-agnostic plot
+        cache: true
   evaluate:
     cmd: python src/evaluate.py
     deps:
     - data/processed/test.csv
     - models/model.joblib
     - src/evaluate.py
+    # --- Add these plot outputs ---
+    outs:                           # Use 'outs' instead of 'metrics' for plots
+    - plots/confusion_matrix.png:
+        cache: true
+    - plots/roc_curve.png:
+        cache: true
+    # --- Keep the metrics definition ---
     metrics:
     - metrics/metrics.json:
         cache: false
+
+plots:
+- plots

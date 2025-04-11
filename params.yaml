@@ -1,4 +1,3 @@
-# params.yaml
 seed: 42              # Random seed for reproducibility
 
 # Data Simulation Parameters (src/simulate.py)
