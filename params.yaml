@@ -1,0 +1,26 @@
+# params.yaml
+seed: 42              # Random seed for reproducibility
+
+# Data Simulation Parameters (src/simulate.py)
+simulate:
+  n_samples_per_class: 100
+  n_features: 5
+  mean_healthy: 0.0
+  std_healthy: 1.0
+  mean_diseased: 0.8 # Slightly different mean for diseased class
+  std_diseased: 1.2
+
+# Data Preparation Parameters (src/prepare.py)
+prepare:
+  split_ratio: 0.3   # Proportion of data for the test set
+
+# Training Parameters (src/train.py)
+train:
+  model_type: 'LogisticRegression' # Could be 'RandomForest' later
+  # Logistic Regression specific params
+  logreg:
+    C: 1.0            # Regularization strength
+  # Random Forest specific params (for later experiment)
+  rf:
+    n_estimators: 100
+    max_depth: 10

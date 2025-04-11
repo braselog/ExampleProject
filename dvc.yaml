@@ -1,0 +1,40 @@
+stages:
+  simulate:
+    cmd: python src/simulate.py
+    deps:
+    - src/simulate.py
+    params:
+    - seed
+    - simulate
+    outs:
+    - data/raw/measurements.csv
+  prepare:
+    cmd: python src/prepare.py
+    deps:
+    - data/raw/measurements.csv
+    - src/prepare.py
+    params:
+    - prepare
+    - seed
+    outs:
+    - data/processed/test.csv
+    - data/processed/train.csv
+  train:
+    cmd: python src/train.py
+    deps:
+    - data/processed/train.csv
+    - src/train.py
+    params:
+    - seed
+    - train
+    outs:
+    - models/model.joblib
+  evaluate:
+    cmd: python src/evaluate.py
+    deps:
+    - data/processed/test.csv
+    - models/model.joblib
+    - src/evaluate.py
+    metrics:
+    - metrics/metrics.json:
+        cache: false
