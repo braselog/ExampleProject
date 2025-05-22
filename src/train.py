@@ -5,11 +5,14 @@ from sklearn.ensemble import RandomForestClassifier
 import joblib
 import yaml
 from pathlib import Path
+from dvclive import Live
 import matplotlib.pyplot as plt
 import seaborn as sns # Using seaborn for easier plotting with hues
 
 if __name__ == "__main__":
     params = yaml.safe_load(open("params.yaml"))
+    live = Live(save_dvc_exp=True)
+    live.log_params(params)
     seed = params['seed']
     train_params = params['train']
     model_type = train_params['model_type']
@@ -62,6 +65,7 @@ if __name__ == "__main__":
         plt.xticks(range(X_train.shape[1]), [feature_names[i] for i in indices], rotation=90)
         plt.tight_layout()
         plt.savefig(feature_importance_path)
+        live.log_image("feature_importance.png", feature_importance_path)
         plt.close()
     elif plot_feature_importance:
          print("Model selected for feature importance plot, but does not support it directly.")
@@ -91,6 +95,7 @@ if __name__ == "__main__":
             plt.ylabel('Count')
             plt.tight_layout()
             plt.savefig(pred_prob_path)
+            live.log_image("predicted_probabilities_train.png", pred_prob_path)
             plt.close()
 
         except Exception as e:
