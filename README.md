@@ -11,21 +11,21 @@ The pipeline is configurable through `params.yaml` and uses `dvc` to manage stag
 ## Project Structure
 
 Key directories and files in the project include:
--   `data/`: Contains raw, intermediate, and processed data.
-    -   `data/raw/`: Stores the initially simulated data (`measurements.csv`).
-    -   `data/processed/`: Stores the split training (`train.csv`) and testing (`test.csv`) datasets.
--   `models/`: Stores the trained machine learning model (`model.joblib`).
--   `src/`: Contains the Python scripts for each pipeline stage.
-    -   `src/simulate.py`: Generates the raw data.
-    -   `src/prepare.py`: Splits data into train and test sets.
-    -   `src/train.py`: Trains the model.
-    -   `src/evaluate.py`: Evaluates the model and generates metrics.
--   `plots/`: Contains generated plots like feature importance, confusion matrix, ROC curve, and predicted probability distributions.
--   `metrics/`: Stores evaluation metrics in `metrics.json`.
--   `dvc.yaml`: Defines the DVC pipeline stages, their inputs, outputs, and dependencies.
--   `params.yaml`: Contains parameters for data simulation, data preparation, and model training.
--   `requirements.txt`: Lists the Python dependencies for this project.
--   `.dvc/`: Directory used by DVC to track data, models, and metrics. (Usually not modified manually).
+- `data/`: Contains raw, intermediate, and processed data.
+  - `data/raw/`: Stores the initially simulated data (`measurements.csv`).
+  - `data/processed/`: Stores the split training (`train.csv`) and testing (`test.csv`) datasets.
+- `models/`: Stores the trained machine learning model (`model.joblib`).
+- `src/`: Contains the Python scripts for each pipeline stage.
+  - `src/simulate.py`: Generates the raw data.
+  - `src/prepare.py`: Splits data into train and test sets.
+  - `src/train.py`: Trains the model.
+  - `src/evaluate.py`: Evaluates the model and generates metrics.
+- `plots/`: Contains generated plots like feature importance, confusion matrix, ROC curve, and predicted probability distributions.
+- `metrics/`: Stores evaluation metrics in `metrics.json`.
+- `dvc.yaml`: Defines the DVC pipeline stages, their inputs, outputs, and dependencies.
+- `params.yaml`: Contains parameters for data simulation, data preparation, and model training.
+- `requirements.txt`: Lists the Python dependencies for this project.
+- `.dvc/`: Directory used by DVC to track data, models, and metrics. (Usually not modified manually).
 
 ## Setup
 
