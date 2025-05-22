@@ -12,9 +12,11 @@ from sklearn.metrics import (
 import matplotlib.pyplot as plt
 import yaml
 from pathlib import Path
+from dvclive import Live
 import numpy as np # Needed for roc curve processing
 
 if __name__ == "__main__":
+    live = Live(save_dvc_exp=True)
     model_path = Path("models/model.joblib")
     test_data_path = Path("data/processed/test.csv")
 
@@ -64,6 +66,7 @@ if __name__ == "__main__":
     }
 
     print(f"Metrics: {metrics}")
+    live.log_metrics(metrics)
     print(f"Saving metrics to {metrics_path}")
     with open(metrics_path, 'w') as f:
         json.dump(metrics, f, indent=4)
@@ -82,6 +85,7 @@ if __name__ == "__main__":
         plt.title("Confusion Matrix")
         plt.tight_layout()
         plt.savefig(conf_matrix_path)
+        live.log_image("confusion_matrix.png", conf_matrix_path)
         plt.close()
     except Exception as e:
         print(f"Could not generate confusion matrix: {e}")
@@ -105,6 +109,7 @@ if __name__ == "__main__":
         plt.legend(loc="lower right")
         plt.tight_layout()
         plt.savefig(roc_curve_path)
+        live.log_image("roc_curve.png", roc_curve_path)
         plt.close()
 
         # Re-save metrics JSON now that it includes AUC

@@ -159,6 +159,26 @@ After running the pipeline, the following outputs will be generated and tracked 
 
 These outputs can be accessed directly from the respective paths after the pipeline has been successfully executed.
 
+## Experiment Tracking with DVC Live
+
+This project integrates `dvclive` to enhance experiment tracking and management. `dvclive` is used within the training (`src/train.py`) and evaluation (`src/evaluate.py`) scripts to automatically log important information during the pipeline execution.
+
+**Key benefits and features include:**
+
+*   **Automatic Logging:** Parameters from `params.yaml`, performance metrics (like accuracy, F1-score, ROC AUC), and generated plots (such as feature importance, confusion matrix, ROC curves) are automatically logged without requiring extensive manual setup.
+*   **Enhanced Reproducibility:** By tracking these details for each experiment, `dvclive` makes it easier to reproduce results and understand the impact of changes in parameters or code.
+*   **Organized Project Management:** It helps keep experiments organized, aligning with the project's goal of demonstrating best practices in managing ML projects. All tracked data is stored in a structured way, typically within a `dvclive` directory (which itself is tracked by DVC and Git).
+
+**Usage Example:**
+
+When you run experiments using DVC, for example with `dvc exp run`, `dvclive` works in the background. You can then inspect the results using DVC commands:
+
+```bash
+dvc exp show
+```
+
+This command will display a table comparing parameters and metrics across different experiments. The plots logged by `dvclive` will be saved within the `dvclive/plots` directory (or a similar path, check `dvc.yaml` for `dvclive` outputs) and can also be visualized using DVC Studio or by inspecting the files directly. This provides a clear and auditable trail of your experimentation process.
+
 ## Contributing and Future Improvements
 
 This project serves as a template and demonstration of a DVC-based machine learning pipeline. Contributions and suggestions for improvements are welcome!
