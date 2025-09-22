@@ -8,6 +8,7 @@ stages:
     - simulate
     outs:
     - data/raw/measurements.csv
+
   prepare:
     cmd: python src/prepare.py
     deps:
@@ -19,6 +20,7 @@ stages:
     outs:
     - data/processed/test.csv
     - data/processed/train.csv
+
   train:
     cmd: python src/train.py
     deps:
@@ -29,10 +31,7 @@ stages:
     - train
     outs:
     - models/model.joblib
-    #- plots/feature_importance.png: # Existing plot
-    #    cache: true
-    - plots/predicted_probabilities_train.png: # New model-agnostic plot
-        cache: true
+
   evaluate:
     cmd: python src/evaluate.py
     deps:

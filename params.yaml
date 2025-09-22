@@ -2,7 +2,7 @@ seed: 42              # Random seed for reproducibility
 
 # Data Simulation Parameters (src/simulate.py)
 simulate:
-  n_samples_per_class: 100
+  n_samples_per_class: 10
   n_features: 5
   mean_healthy: 0.0
   std_healthy: 1.0
@@ -20,6 +20,3 @@ train:
   logreg:
     C: 1.0            # Regularization strength
   # Random Forest specific params (for later experiment)
-  rf:
-    n_estimators: 100
-    max_depth: 10
