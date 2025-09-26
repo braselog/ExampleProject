@@ -33,9 +33,8 @@ if __name__ == "__main__":
     params = yaml.safe_load(open("params.yaml"))['simulate']
     seed = yaml.safe_load(open("params.yaml"))['seed']
 
-    output_dir = Path("data/raw")
-    output_dir.mkdir(parents=True, exist_ok=True)
-    output_path = output_dir / "measurements.csv"
+    os.makedirs(os.path.dirname(params['out_file']), exist_ok=True)
+    output_path = params['out_file']
 
     means = {'healthy': params['mean_healthy'], 'diseased': params['mean_diseased']}
     stds = {'healthy': params['std_healthy'], 'diseased': params['std_diseased']}

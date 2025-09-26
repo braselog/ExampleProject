@@ -5,8 +5,8 @@ stages:
     deps:
     - path: src/simulate.py
       hash: md5
-      md5: 3df94f94a1096e303f129c93827c0296
-      size: 1711
+      md5: 9ae9049b551f01dfd361e2b721881705
+      size: 1682
     params:
       params.yaml:
         seed: 42
@@ -17,13 +17,15 @@ stages:
           std_healthy: 1.0
           mean_diseased: 0.8
           std_diseased: 1.2
+          out_file: data/raw/measurements.csv
     outs:
     - path: data/raw/measurements.csv
       hash: md5
       md5: e6e8fb0c8bd45a43289717bf2f5999a1
       size: 21176
   prepare:
-    cmd: python src/prepare.py
+    cmd: python src/prepare.py data/raw/measurements.csv data/processed/train.csv
+      data/processed/test.csv
     deps:
     - path: data/raw/measurements.csv
       hash: md5
@@ -31,12 +33,14 @@ stages:
       size: 21176
     - path: src/prepare.py
       hash: md5
-      md5: 5ef7ae2252702d4f3ea8890037075705
-      size: 998
+      md5: f2d86ba1b9514e46ef5b5da04b6ad1de
+      size: 1282
     params:
       params.yaml:
         prepare:
           split_ratio: 0.3
+          train_out: data/processed/train.csv
+          test_out: data/processed/test.csv
         seed: 42
     outs:
     - path: data/processed/test.csv
@@ -48,7 +52,8 @@ stages:
       md5: efcb249004801b719a67f9e40a93068b
       size: 14628
   train:
-    cmd: python src/train.py
+    cmd: python src/train.py data/processed/train.csv models/model.joblib --predicted-probabilities-plot
+      plots/predicted_probabilities_train.png --feature-importance-plot plots/feature_importance.png
     deps:
     - path: data/processed/train.csv
       hash: md5
@@ -56,13 +61,16 @@ stages:
       size: 14628
     - path: src/train.py
       hash: md5
-      md5: 0bde20c2fafc3fc69c61f9337f8b3bdf
-      size: 4315
+      md5: 544ff67e26abaedf04e1261029b377bd
+      size: 6691
     params:
       params.yaml:
         seed: 42
         train:
-          model_type: LogisticRegression
+          model_type: RandomForest
+          model_out: models/model.joblib
+          feature_importance_plot: plots/feature_importance.png
+          predicted_probabilities_plot: plots/predicted_probabilities_train.png
           logreg:
             C: 1.0
           rf:
@@ -71,14 +79,19 @@ stages:
     outs:
     - path: models/model.joblib
       hash: md5
-      md5: 036be78f3284c9f7cb78fc80f89fff4c
-      size: 1439
+      md5: 9213cd661fa0882b7ea89cb8e49b268b
+      size: 396089
+    - path: plots/feature_importance.png
+      hash: md5
+      md5: 5ac3eba4ca7a05d8b75ba354f1ef4b98
+      size: 16938
     - path: plots/predicted_probabilities_train.png
       hash: md5
-      md5: 42ef9fb05897ca44bc9c80dcc9cd1fee
-      size: 48848
+      md5: 7de3c3c12cfe2c009bdb161b7e6ca776
+      size: 46068
   evaluate:
-    cmd: python src/evaluate.py
+    cmd: python src/evaluate.py data/processed/test.csv models/model.joblib metrics/metrics.json
+      plots/confusion_matrix.png plots/roc_curve.png
     deps:
     - path: data/processed/test.csv
       hash: md5
@@ -86,22 +99,28 @@ stages:
       size: 6292
     - path: models/model.joblib
       hash: md5
-      md5: 036be78f3284c9f7cb78fc80f89fff4c
-      size: 1439
+      md5: 9213cd661fa0882b7ea89cb8e49b268b
+      size: 396089
     - path: src/evaluate.py
       hash: md5
-      md5: 7c0aa77c4b2aeb505aec1f9a11f2f4bb
-      size: 4236
+      md5: e50ebbaab461b241b608d5cf4e082cde
+      size: 4324
+    params:
+      params.yaml:
+        evaluate:
+          metrics_out: metrics/metrics.json
+          confusion_matrix_plot: plots/confusion_matrix.png
+          roc_curve_plot: plots/roc_curve.png
     outs:
     - path: metrics/metrics.json
       hash: md5
-      md5: 63bd2e994a91cb69f13209aec9e02d82
-      size: 179
+      md5: 02b1a1033090d30268fb725f3fc01661
+      size: 208
     - path: plots/confusion_matrix.png
       hash: md5
-      md5: d9224e8c208725881f4dc80c678c2386
-      size: 19991
+      md5: e64887a35d9cd12fee0bcf940c8026da
+      size: 22101
     - path: plots/roc_curve.png
       hash: md5
-      md5: f2f14bfd07aed3aff974efa10560cf60
-      size: 37149
+      md5: d7825831a4de020313b660da9a0264cf
+      size: 38421

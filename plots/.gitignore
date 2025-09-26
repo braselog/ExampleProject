@@ -1,3 +1,4 @@
 /predicted_probabilities_train.png
 /confusion_matrix.png
 /roc_curve.png
+/feature_importance.png

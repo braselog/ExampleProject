@@ -7,46 +7,53 @@ stages:
     - seed
     - simulate
     outs:
-    - data/raw/measurements.csv
+    - ${simulate.out_file}
 
   prepare:
-    cmd: python src/prepare.py
+    cmd: python src/prepare.py ${simulate.out_file} ${prepare.train_out} ${prepare.test_out}
     deps:
-    - data/raw/measurements.csv
+    - ${simulate.out_file}
     - src/prepare.py
     params:
     - prepare
     - seed
     outs:
-    - data/processed/test.csv
-    - data/processed/train.csv
+    - ${prepare.train_out}
+    - ${prepare.test_out}
 
   train:
-    cmd: python src/train.py
+    cmd: >-
+      python src/train.py ${prepare.train_out} ${train.model_out}
+      --predicted-probabilities-plot ${train.predicted_probabilities_plot}
+      --feature-importance-plot ${train.feature_importance_plot}
     deps:
-    - data/processed/train.csv
+    - ${prepare.train_out}
     - src/train.py
     params:
     - seed
     - train
     outs:
-    - models/model.joblib
+    - ${train.model_out}
+    - ${train.predicted_probabilities_plot}:
+        cache: true
+    - ${train.feature_importance_plot}:
+        cache: true
 
   evaluate:
-    cmd: python src/evaluate.py
+    cmd: python src/evaluate.py ${prepare.test_out} ${train.model_out} ${evaluate.metrics_out} ${evaluate.confusion_matrix_plot} ${evaluate.roc_curve_plot}
     deps:
-    - data/processed/test.csv
-    - models/model.joblib
+    - ${prepare.test_out}
+    - ${train.model_out}
     - src/evaluate.py
-    # --- Add these plot outputs ---
-    outs:                           # Use 'outs' instead of 'metrics' for plots
-    - plots/confusion_matrix.png:
+    params:
+    - evaluate
+    outs:
+    - ${evaluate.confusion_matrix_plot}:
         cache: true
-    - plots/roc_curve.png:
+    - ${evaluate.roc_curve_plot}:
         cache: true
-    # --- Keep the metrics definition ---
     metrics:
-    - metrics/metrics.json:
+    - ${evaluate.metrics_out}:
         cache: false
 
 plots:

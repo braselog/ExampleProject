@@ -11,29 +11,32 @@ from sklearn.metrics import (
 )
 import matplotlib.pyplot as plt
 import yaml
+import sys
+import os
 from pathlib import Path
 import numpy as np # Needed for roc curve processing
 
 if __name__ == "__main__":
-    model_path = Path("models/model.joblib")
-    test_data_path = Path("data/processed/test.csv")
+    if len(sys.argv) != 6:
+        print("Usage: python evaluate.py <test_data_file> <model_file> <metrics_output_file> <confusion_matrix_plot> <roc_curve_plot>")
+        sys.exit(1)
+    
+    test_data_file = sys.argv[1]
+    model_file = sys.argv[2]
+    metrics_output_file = sys.argv[3]
+    confusion_matrix_plot = sys.argv[4]
+    roc_curve_plot = sys.argv[5]
 
-    metrics_output_dir = Path("metrics")
-    plots_output_dir = Path("plots") # Define plots directory
+    # Create output directories if they don't exist
+    os.makedirs(os.path.dirname(metrics_output_file), exist_ok=True)
+    os.makedirs(os.path.dirname(confusion_matrix_plot), exist_ok=True)
+    os.makedirs(os.path.dirname(roc_curve_plot), exist_ok=True)
 
-    # Create directories if they don't exist
-    metrics_output_dir.mkdir(parents=True, exist_ok=True)
-    plots_output_dir.mkdir(parents=True, exist_ok=True) # Create plots dir
+    print(f"Loading model from {model_file}")
+    model = joblib.load(model_file)
 
-    metrics_path = metrics_output_dir / "metrics.json"
-    conf_matrix_path = plots_output_dir / "confusion_matrix.png" # Plot path
-    roc_curve_path = plots_output_dir / "roc_curve.png"        # Plot path
-
-    print(f"Loading model from {model_path}")
-    model = joblib.load(model_path)
-
-    print(f"Loading test data from {test_data_path}")
-    test_df = pd.read_csv(test_data_path)
+    print(f"Loading test data from {test_data_file}")
+    test_df = pd.read_csv(test_data_file)
     X_test = test_df.drop('condition', axis=1)
     y_test = test_df['condition']
 
@@ -64,12 +67,12 @@ if __name__ == "__main__":
     }
 
     print(f"Metrics: {metrics}")
-    print(f"Saving metrics to {metrics_path}")
-    with open(metrics_path, 'w') as f:
+    print(f"Saving metrics to {metrics_output_file}")
+    with open(metrics_output_file, 'w') as f:
         json.dump(metrics, f, indent=4)
 
     # --- Plotting Confusion Matrix ---
-    print(f"Generating confusion matrix plot to {conf_matrix_path}")
+    print(f"Generating confusion matrix plot to {confusion_matrix_plot}")
     try:
         # Ensure y_test and y_pred are consistent types (e.g., strings)
         # This can be important if one is inferred as object and other as string
@@ -81,7 +84,7 @@ if __name__ == "__main__":
         )
         plt.title("Confusion Matrix")
         plt.tight_layout()
-        plt.savefig(conf_matrix_path)
+        plt.savefig(confusion_matrix_plot)
         plt.close()
     except Exception as e:
         print(f"Could not generate confusion matrix: {e}")
@@ -89,7 +92,7 @@ if __name__ == "__main__":
 
     # --- Plotting ROC Curve ---
     if y_pred_proba is not None:
-        print(f"Generating ROC curve plot to {roc_curve_path}")
+        print(f"Generating ROC curve plot to {roc_curve_plot}")
         fpr, tpr, thresholds = roc_curve(y_test, y_pred_proba, pos_label='Diseased')
         roc_auc = auc(fpr, tpr)
         metrics['roc_auc'] = roc_auc # Add AUC to metrics
@@ -104,12 +107,12 @@ if __name__ == "__main__":
         plt.title('Receiver Operating Characteristic (ROC) Curve')
         plt.legend(loc="lower right")
         plt.tight_layout()
-        plt.savefig(roc_curve_path)
+        plt.savefig(roc_curve_plot)
         plt.close()
 
         # Re-save metrics JSON now that it includes AUC
-        print(f"Re-saving metrics (with AUC) to {metrics_path}")
-        with open(metrics_path, 'w') as f:
+        print(f"Re-saving metrics (with AUC) to {metrics_output_file}")
+        with open(metrics_output_file, 'w') as f:
             json.dump(metrics, f, indent=4)
     else:
         print("Skipping ROC curve generation as predict_proba was not available.")
