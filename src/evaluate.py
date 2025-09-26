@@ -14,9 +14,11 @@ import yaml
 import sys
 import os
 from pathlib import Path
+from dvclive import Live
 import numpy as np # Needed for roc curve processing
 
 if __name__ == "__main__":
+    live = Live(save_dvc_exp=True)
     if len(sys.argv) != 6:
         print("Usage: python evaluate.py <test_data_file> <model_file> <metrics_output_file> <confusion_matrix_plot> <roc_curve_plot>")
         sys.exit(1)
@@ -67,6 +69,7 @@ if __name__ == "__main__":
     }
 
     print(f"Metrics: {metrics}")
+    live.log_metrics(metrics)
     print(f"Saving metrics to {metrics_output_file}")
     with open(metrics_output_file, 'w') as f:
         json.dump(metrics, f, indent=4)
